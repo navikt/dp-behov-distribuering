@@ -13,12 +13,21 @@ spec:
     path: /metrics
   replicas:
     min: 2
-    max: 3
+    max: 2
   resources:
     limits:
       memory: 512Mi
     requests:
-      cpu: 200m
+      cpu: 50m
       memory: 256Mi
   secureLogs:
     enabled: true
+  env:
+    - name: JDK_JAVA_OPTIONS
+      value: -XX:+UseParallelGC -XX:MaxRAMPercentage=50.0 -XX:ActiveProcessorCount=4
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+  kafka:
+    pool: "{{ kafka_pool }}"
