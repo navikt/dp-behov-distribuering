@@ -10,8 +10,12 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
 
 interface DistribusjonKlient {
@@ -31,7 +35,7 @@ interface DistribusjonKlient {
 
 class DistribusjonHttpKlient(
     url: String,
-    tokenProvider: () -> String,
+    private val tokenProvider: () -> String,
     engine: HttpClientEngine = CIO.create(),
 ) : DistribusjonKlient {
     private val httpClient =
@@ -52,6 +56,8 @@ class DistribusjonHttpKlient(
 
     override suspend fun distribuerJournalpost(request: DistribusjonKlient.Request): DistribusjonKlient.Response {
         return httpClient.post {
+            header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
+            contentType(ContentType.Application.Json)
             setBody(request)
         }.body<DistribusjonKlient.Response>()
     }
