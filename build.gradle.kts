@@ -8,6 +8,13 @@ dependencies {
     implementation(libs.rapids.and.rivers)
     implementation(libs.konfig)
     implementation(libs.kotlin.logging)
+    implementation(libs.bundles.ktor.client)
+    implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
+
+    testImplementation(libs.ktor.client.mock)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.bundles.kotest.assertions)
 }
 
 application {
