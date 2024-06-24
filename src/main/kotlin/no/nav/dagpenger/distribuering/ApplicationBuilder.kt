@@ -17,7 +17,16 @@ internal class ApplicationBuilder(
             .build()
 
     init {
-        rapidsConnection.register(this)
+        rapidsConnection.register(this).also {
+            DistribueringBehovLøser(
+                rapidsConnection = rapidsConnection,
+                distribusjonKlient =
+                    DistribusjonHttpKlient(
+                        url = Configuration.distribuerjournalpostUrl,
+                        tokenProvider = Configuration.tokenProvider,
+                    ),
+            )
+        }
     }
 
     fun start() = rapidsConnection.start()

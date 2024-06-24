@@ -3,7 +3,6 @@ package no.nav.dagpenger.distribuering
 import com.natpryce.konfig.ConfigurationMap
 import com.natpryce.konfig.ConfigurationProperties
 import com.natpryce.konfig.EnvironmentVariables
-import com.natpryce.konfig.getValue
 import com.natpryce.konfig.overriding
 
 internal object Configuration {
@@ -21,6 +20,9 @@ internal object Configuration {
 
     val properties =
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables() overriding defaultProperties
+
+    val distribuerjournalpostUrl = "http://localhost:8080/distribuerJournalpost"
+    val tokenProvider: () -> String = { "todo" }
 
     val config: Map<String, String> =
         properties.list().reversed().fold(emptyMap()) { map, pair ->
