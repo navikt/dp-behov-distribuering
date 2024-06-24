@@ -1,1 +1,4 @@
 kafka_pool: nav-prod
+dokdistfordeling:
+  url: "https://dokdistfordeling.prod-fss-pub.nais.io/rest/v1/distribuerjournalpost"
+  apiScope: "api://prod-fss.teamdokumenthandtering.saf/.default"

@@ -10,9 +10,9 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-serialization-jackson:${libs.versions.ktor.get()}")
+    implementation(libs.dp.biblioteker.oauth2.klient)
 
     testImplementation(libs.ktor.client.mock)
-
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest.assertions)
 }
