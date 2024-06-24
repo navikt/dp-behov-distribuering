@@ -31,3 +31,6 @@ spec:
       runtime: java
   kafka:
     pool: "{{ kafka_pool }}"
+  azure:
+    application:
+      enabled: true
