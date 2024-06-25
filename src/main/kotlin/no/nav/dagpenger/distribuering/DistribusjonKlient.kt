@@ -26,7 +26,7 @@ interface DistribusjonKlient {
     data class Request(
         val journalpostId: String,
         val distribusjonstype: String = "VEDTAK",
-        val bestillendFagsystem: String = "AO01",
+        val bestillendeFagsystem: String = "AO01",
         val dokumentProdApp: String = "dagpenger ny",
     )
 
