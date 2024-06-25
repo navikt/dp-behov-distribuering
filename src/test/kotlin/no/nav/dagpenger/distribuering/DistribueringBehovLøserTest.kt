@@ -25,7 +25,7 @@ internal class DistribueringBehovLøserTest {
                     )
                 } returns
                     DistribusjonKlient.Response(
-                        bestillingId = bestillingId,
+                        bestillingsId = bestillingId,
                     )
             }
         DistribueringBehovLøser(

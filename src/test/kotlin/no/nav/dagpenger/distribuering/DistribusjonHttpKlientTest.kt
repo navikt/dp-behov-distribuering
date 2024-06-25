@@ -24,7 +24,7 @@ class DistribusjonHttpKlientTest {
                 MockEngine {
                     httpRequestData = it
                     respond(
-                        content = """{"bestillingId":"12345"}""",
+                        content = """{"bestillingsId":"12345"}""",
                         headers = headersOf(HttpHeaders.ContentType, ContentType.Application.Json.toString()),
                     )
                 }
@@ -49,7 +49,7 @@ class DistribusjonHttpKlientTest {
                 it.headers[HttpHeaders.Authorization] shouldBe "Bearer mock-token"
             }
 
-            response.bestillingId shouldBe "12345"
+            response.bestillingsId shouldBe "12345"
         }
 
     @Test

@@ -46,7 +46,7 @@ internal class DistribueringBehovLøser(
                     mapOf(
                         BEHOV_NAVN to
                             mapOf(
-                                "distribueringId" to respond.bestillingId,
+                                "distribueringId" to respond.bestillingsId,
                             ),
                     )
 
