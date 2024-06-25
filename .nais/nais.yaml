@@ -39,5 +39,6 @@ spec:
     application:
       enabled: true
   accessPolicy:
-    external:
-      - host: {{ dokdist.host }}
+    outbound:
+      external:
+        - host: {{ dokdistfordeling.host }}
