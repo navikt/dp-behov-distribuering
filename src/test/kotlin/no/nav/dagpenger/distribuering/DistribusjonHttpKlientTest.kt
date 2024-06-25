@@ -1,9 +1,12 @@
 package no.nav.dagpenger.distribuering
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondBadRequest
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -47,5 +50,25 @@ class DistribusjonHttpKlientTest {
             }
 
             response.bestillingId shouldBe "12345"
+        }
+
+    @Test
+    fun testDistribuerJournalpostFailure(): Unit =
+
+        runBlocking {
+            shouldThrow<ClientRequestException> {
+                DistribusjonHttpKlient(
+                    url = "https://mockapi.test",
+                    tokenProvider = { "mock-token" },
+                    engine =
+                        MockEngine {
+                            respondBadRequest()
+                        },
+                ).distribuerJournalpost(
+                    DistribusjonKlient.Request(
+                        journalpostId = "test-journalpost",
+                    ),
+                )
+            }
         }
 }

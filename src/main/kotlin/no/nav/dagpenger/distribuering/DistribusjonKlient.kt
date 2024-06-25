@@ -42,6 +42,7 @@ class DistribusjonHttpKlient(
 ) : DistribusjonKlient {
     private val httpClient =
         HttpClient(engine = engine) {
+            expectSuccess = true
             defaultRequest {
                 url(url)
                 bearerAuth(tokenProvider())
