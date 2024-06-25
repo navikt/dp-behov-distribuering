@@ -28,6 +28,7 @@ interface DistribusjonKlient {
         val distribusjonstype: String = "VEDTAK",
         val bestillendeFagsystem: String = "AO01",
         val dokumentProdApp: String = "dagpenger ny",
+        val distribusjonstidspunkt: String = "UMIDDELBART",
     )
 
     data class Response(
