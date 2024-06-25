@@ -32,7 +32,7 @@ interface DistribusjonKlient {
     )
 
     data class Response(
-        val bestillingId: String,
+        val bestillingsId: String,
     )
 }
 
