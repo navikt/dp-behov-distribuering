@@ -1,12 +1,16 @@
 package no.nav.dagpenger.distribuering
 
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 
-class DistribueringBehovLøser(
+private val logger = KotlinLogging.logger { }
+private val sikkerlogg = KotlinLogging.logger("tjenestekall")
+
+internal class DistribueringBehovLøser(
     rapidsConnection: RapidsConnection,
     private val distribusjonKlient: DistribusjonKlient,
 ) :
@@ -28,24 +32,29 @@ class DistribueringBehovLøser(
         packet: JsonMessage,
         context: MessageContext,
     ) {
-        runBlocking {
-            val journalpostId = packet["journalpostId"].asText()
-            val respond =
-                distribusjonKlient.distribuerJournalpost(
-                    DistribusjonKlient.Request(
-                        journalpostId = journalpostId,
-                    ),
-                )
-
-            packet["@løsning"] =
-                mapOf(
-                    BEHOV_NAVN to
-                        mapOf(
-                            "distribueringId" to respond.bestillingId,
+        val journalpostId = packet["journalpostId"].asText()
+        try {
+            runBlocking {
+                val respond =
+                    distribusjonKlient.distribuerJournalpost(
+                        DistribusjonKlient.Request(
+                            journalpostId = journalpostId,
                         ),
-                )
+                    )
 
-            context.publish(packet.toJson())
+                packet["@løsning"] =
+                    mapOf(
+                        BEHOV_NAVN to
+                            mapOf(
+                                "distribueringId" to respond.bestillingId,
+                            ),
+                    )
+
+                context.publish(packet.toJson())
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Kunne ikke løse behov for $journalpostId. Feil er ${e.message} " }
+            sikkerlogg.error(e) { "Kunne ikke løse behov for pakke $packet." }
         }
     }
 }
