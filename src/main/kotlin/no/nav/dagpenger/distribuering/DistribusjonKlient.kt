@@ -8,15 +8,17 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
+import mu.KotlinLogging
+
+private val log = KotlinLogging.logger { }
 
 interface DistribusjonKlient {
     suspend fun distribuerJournalpost(request: Request): Response
@@ -50,13 +52,18 @@ class DistribusjonHttpKlient(
                 }
             }
             install(Logging) {
-                level = LogLevel.INFO
+                level = LogLevel.ALL
+                logger =
+                    object : Logger {
+                        override fun log(message: String) {
+                            log.info { message }
+                        }
+                    }
             }
         }
 
     override suspend fun distribuerJournalpost(request: DistribusjonKlient.Request): DistribusjonKlient.Response {
         return httpClient.post {
-            header(HttpHeaders.Authorization, "Bearer ${tokenProvider.invoke()}")
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body<DistribusjonKlient.Response>()
