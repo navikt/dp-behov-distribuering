@@ -33,7 +33,7 @@ internal class DistribueringBehovLøser(
         context: MessageContext,
     ) {
         val journalpostId = packet["journalpostId"].asText()
-        try {
+        withLogging(journalpostId, packet) {
             runBlocking {
                 val respond =
                     distribusjonKlient.distribuerJournalpost(
@@ -50,10 +50,27 @@ internal class DistribueringBehovLøser(
                             ),
                     )
 
-                context.publish(packet.toJson())
+                val message = packet.toJson()
+                context.publish(message)
+                message
+            }
+        }
+    }
+
+    private fun withLogging(
+        jp: String,
+        packet: JsonMessage,
+        block: () -> String,
+    ) {
+        logger.info { "Løser behov for distribusjon av journalpost $jp" }
+        sikkerlogg.info { "Løser behov for distribusjon av journalpost for ${packet.toJson()}" }
+        try {
+            block().let { løsning ->
+                logger.info { "Løst behov for distribusjon av journalpost $jp" }
+                sikkerlogg.info { "Løst behov for distribusjon av journalpost $jp med løsning $løsning" }
             }
         } catch (e: Exception) {
-            logger.error(e) { "Kunne ikke løse behov for $journalpostId. Feil er ${e.message} " }
+            logger.error(e) { "Kunne ikke løse behov for $jp. Feil er ${e.message} " }
             sikkerlogg.error(e) { "Kunne ikke løse behov for pakke $packet." }
             throw e
         }
