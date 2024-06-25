@@ -55,7 +55,7 @@ internal class DistribueringBehovLøser(
         } catch (e: Exception) {
             logger.error(e) { "Kunne ikke løse behov for $journalpostId. Feil er ${e.message} " }
             sikkerlogg.error(e) { "Kunne ikke løse behov for pakke $packet." }
-            throw e
+//            throw e
         }
     }
 }
