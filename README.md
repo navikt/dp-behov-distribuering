@@ -1,25 +1,26 @@
-# Dagpenger-SERVICENAME
+## dp-behov-distribuering
+
+## Formålet med appen
+Sørg for at journalførte vedtaksbrev blir distribuert til dagpengesøker. 
+
+## Hvordan fungerer appen
+Ved å lytte på ```"DistribueringBehov"``` hendelser som publiseres fra [dp-saksbehandling](https://github.com/navikt/dp-saksbehandling)
+så vil appen kalle dokdist api for distribuering med journalpostIden til vedtaksbrevet.
+
+Når distribusjonen er ferdig vil appen publisere en ```"DistribusjonFerdig"``` hendelse som kvittering. 
+[dp-saksbehandling](https://github.com/navikt/dp-saksbehandling) lytter på kvitteringen og oppdaterer status på Utsendingen.
+
+## Begrensninger
+1. Det er kun vedtaksbrev som kan distribueres via denne applikasjonen.
+2. Det er kun ARENA vedtak som kan distribueres via denne applikasjonen foreløpig.
 
 ## Komme i gang
-
-Gradle brukes som byggverktøy og er bundlet inn.
+Gradle brukes som byggverktøy og er bundlet inn
 
 `./gradlew build`
 
-## Sjekkliste for ny app
-1. Bytt navn på app i nais.yaml, settings.gradle og dockerfile.
-2. Fjern kommentering i deploy.yaml (står beskrevet hva man skal kommentere ut)
-3. Legge til deploysecreten i repoet.
+## Henvendelser
+Spørsmål kan stilles som issues på github.
 
----
-
-# Henvendelser
-
-Spørsmål knyttet til koden eller prosjektet kan rettes mot:
-
-* André Roaldseth, andre.roaldseth@nav.no
-* Eller en annen måte for omverden å kontakte teamet på
-
-## For NAV-ansatte
-
-Interne henvendelser kan sendes via Slack i kanalen #dagpenger.
+### For NAV-ansatte
+Interne henvendelser kan sendes via Slack i kanalen #team-dagpenger-saksbehandlerflate

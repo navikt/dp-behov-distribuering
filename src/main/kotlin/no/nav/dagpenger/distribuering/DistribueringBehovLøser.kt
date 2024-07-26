@@ -35,7 +35,7 @@ internal class DistribueringBehovLøser(
         val journalpostId = packet["journalpostId"].asText()
         withLogging(journalpostId, packet) {
             runBlocking {
-                val respond =
+                val response =
                     distribusjonKlient.distribuerJournalpost(
                         DistribusjonKlient.Request(
                             journalpostId = journalpostId,
@@ -46,7 +46,7 @@ internal class DistribueringBehovLøser(
                     mapOf(
                         BEHOV_NAVN to
                             mapOf(
-                                "distribueringId" to respond.bestillingsId,
+                                "distribueringId" to response.bestillingsId,
                             ),
                     )
 

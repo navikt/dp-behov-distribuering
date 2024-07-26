@@ -20,13 +20,15 @@ import mu.KotlinLogging
 
 private val log = KotlinLogging.logger { }
 
+private const val ARENA_FAGSYSTEM_KODE = "AO01"
+
 interface DistribusjonKlient {
     suspend fun distribuerJournalpost(request: Request): Response
 
     data class Request(
         val journalpostId: String,
         val distribusjonstype: String = "VEDTAK",
-        val bestillendeFagsystem: String = "AO01",
+        val bestillendeFagsystem: String = ARENA_FAGSYSTEM_KODE,
         val dokumentProdApp: String = "dagpenger ny",
         val distribusjonstidspunkt: String = "UMIDDELBART",
     )
