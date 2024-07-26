@@ -30,7 +30,7 @@ interface DistribusjonKlient {
         val distribusjonstype: String = "VEDTAK",
         val bestillendeFagsystem: String = ARENA_FAGSYSTEM_KODE,
         val dokumentProdApp: String = "dagpenger ny",
-        val distribusjonstidspunkt: String = "UMIDDELBART",
+        val distribusjonstidspunkt: String = "KJERNETID",
     )
 
     data class Response(
