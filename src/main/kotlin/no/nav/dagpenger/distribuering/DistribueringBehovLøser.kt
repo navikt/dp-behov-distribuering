@@ -33,27 +33,31 @@ internal class DistribueringBehovLøser(
         context: MessageContext,
     ) {
         val journalpostId = packet["journalpostId"].asText()
-        withLogging(journalpostId, packet) {
-            runBlocking {
-                val response =
-                    distribusjonKlient.distribuerJournalpost(
-                        DistribusjonKlient.Request(
-                            journalpostId = journalpostId,
-                        ),
-                    )
-
-                packet["@løsning"] =
-                    mapOf(
-                        BEHOV_NAVN to
-                            mapOf(
-                                "distribueringId" to response.bestillingsId,
+        kotlin.runCatching {
+            withLogging(journalpostId, packet) {
+                runBlocking {
+                    val response =
+                        distribusjonKlient.distribuerJournalpost(
+                            DistribusjonKlient.Request(
+                                journalpostId = journalpostId,
                             ),
-                    )
+                        )
 
-                val message = packet.toJson()
-                context.publish(message)
-                message
+                    packet["@løsning"] =
+                        mapOf(
+                            BEHOV_NAVN to
+                                    mapOf(
+                                        "distribueringId" to response.bestillingsId,
+                                    ),
+                        )
+
+                    val message = packet.toJson()
+                    context.publish(message)
+                    message
+                }
             }
+        }.onFailure {
+            logger.error(it) { "Svelger feil." }
         }
     }
 
