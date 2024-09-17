@@ -46,9 +46,9 @@ internal class DistribueringBehovLøser(
                     packet["@løsning"] =
                         mapOf(
                             BEHOV_NAVN to
-                                    mapOf(
-                                        "distribueringId" to response.bestillingsId,
-                                    ),
+                                mapOf(
+                                    "distribueringId" to response.bestillingsId,
+                                ),
                         )
 
                     val message = packet.toJson()
