@@ -27,11 +27,12 @@ internal object Configuration {
     val properties =
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables() overriding defaultProperties
 
-    val distribuerjournalpostUrl = properties[Key("DOKDISTFORDELING_URL", stringType) ]
-    val distribuerjournalpostApiScope = properties[Key("DOKDISTFORDELING_API_SCOPE", stringType) ]
+    val distribuerjournalpostUrl = properties[Key("DOKDISTFORDELING_URL", stringType)]
+    val distribuerjournalpostApiScope = properties[Key("DOKDISTFORDELING_API_SCOPE", stringType)]
 
     val tokenProvider = {
         azureAdClient.clientCredentials(distribuerjournalpostApiScope).accessToken
+            ?: throw RuntimeException("Klarte ikke hente token")
     }
 
     val config: Map<String, String> =
