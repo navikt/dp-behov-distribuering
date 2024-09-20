@@ -1,7 +1,11 @@
 package no.nav.dagpenger.distribuering
 
 import io.kotest.assertions.json.shouldEqualSpecifiedJsonIgnoringOrder
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respondBadRequest
+import io.ktor.client.plugins.ClientRequestException
 import io.mockk.coEvery
 import io.mockk.mockk
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -55,6 +59,34 @@ internal class DistribueringBehovLøserTest {
               }
             }
             """
+    }
+
+    @Test
+    fun `skal kaste feil dersom distribusjonsklient feiler`() {
+        val journalpostId = "12345"
+
+        val distribusjonKlient =
+            DistribusjonHttpKlient(
+                url = "http://localhost:8080",
+                tokenProvider = { "" },
+                engine =
+                    MockEngine {
+                        respondBadRequest()
+                    },
+            )
+
+        DistribueringBehovLøser(
+            rapidsConnection = testRapid,
+            distribusjonKlient = distribusjonKlient,
+        )
+
+        shouldThrow<ClientRequestException> {
+            testRapid.sendTestMessage(
+                testMelding(
+                    journalpostId = journalpostId,
+                ),
+            )
+        }
     }
 
     private fun testMelding(journalpostId: String): String {

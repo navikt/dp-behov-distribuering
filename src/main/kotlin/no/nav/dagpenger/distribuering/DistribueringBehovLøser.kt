@@ -57,7 +57,8 @@ internal class DistribueringBehovLøser(
                 }
             }
         }.onFailure {
-            logger.error(it) { "Svelger feil." }
+            logger.error(it) { "Feil på kall mot joark" }
+            throw it
         }
     }
 
