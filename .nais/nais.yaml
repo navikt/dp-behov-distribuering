@@ -25,7 +25,7 @@ spec:
   env:
     - name: DOKDISTFORDELING_URL
       value: {{ dokdistfordeling.url }}
-    - name: DOKDISTFORDELING_API_SCPPE
+    - name: DOKDISTFORDELING_API_SCOPE
       value: {{ dokdistfordeling.apiScope }}
     - name: JDK_JAVA_OPTIONS
       value: -XX:+UseParallelGC -XX:MaxRAMPercentage=50.0 -XX:ActiveProcessorCount=4
