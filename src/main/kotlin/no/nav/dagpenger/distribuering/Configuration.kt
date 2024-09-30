@@ -18,7 +18,7 @@ internal object Configuration {
                 "RAPID_APP_NAME" to "dp-behov-distribuering",
                 "KAFKA_CONSUMER_GROUP_ID" to "dp-behov-distribuering-v1",
                 "KAFKA_RAPID_TOPIC" to "teamdagpenger.rapid.v1",
-                "KAFKA_RESET_POLICY" to "latest",
+                "KAFKA_RESET_POLICY" to "LATEST",
                 "DOKDISTFORDELING_URL" to "https://dokdistfordeling-q1.dev-fss-pub.nais.io/rest/v1/distribuerjournalpost",
                 "DOKDISTFORDELING_API_SCOPE" to "api://dev-fss.teamdokumenthandtering.saf-q1/.default",
             ),

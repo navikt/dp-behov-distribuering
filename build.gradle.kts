@@ -15,6 +15,7 @@ dependencies {
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
     testImplementation(libs.bundles.kotest.assertions)
+    testImplementation(libs.rapids.and.rivers.test)
 }
 
 application {

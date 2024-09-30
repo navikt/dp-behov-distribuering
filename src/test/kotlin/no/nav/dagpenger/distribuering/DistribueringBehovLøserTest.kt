@@ -1,5 +1,6 @@
 package no.nav.dagpenger.distribuering
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.kotest.assertions.json.shouldEqualSpecifiedJsonIgnoringOrder
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -8,7 +9,6 @@ import io.ktor.client.engine.mock.respondBadRequest
 import io.ktor.client.plugins.ClientRequestException
 import io.mockk.coEvery
 import io.mockk.mockk
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.Test
 
 internal class DistribueringBehovLøserTest {
