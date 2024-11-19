@@ -68,7 +68,6 @@ internal class DistribueringBehovLøser(
         block: () -> String,
     ) {
         logger.info { "Løser behov for distribusjon av journalpost $jp" }
-        sikkerlogg.info { "Løser behov for distribusjon av journalpost for ${packet.toJson()}" }
         try {
             block().let { løsning ->
                 logger.info { "Løst behov for distribusjon av journalpost $jp" }
@@ -76,7 +75,7 @@ internal class DistribueringBehovLøser(
             }
         } catch (e: Exception) {
             logger.error(e) { "Kunne ikke løse behov for $jp. Feil er ${e.message} " }
-            sikkerlogg.error(e) { "Kunne ikke løse behov for pakke $packet." }
+            sikkerlogg.error(e) { "Kunne ikke løse behov for pakke ${packet.toJson()}." }
             throw e
         }
     }
