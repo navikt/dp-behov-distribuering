@@ -34,7 +34,7 @@ internal class DistribueringBehovLøser(
     ) {
         val journalpostId = packet["journalpostId"].asText()
 
-        if (journalpostId == "671706117") {
+        if (journalpostId == "671706236") {
             logger.warn { "Skipper journalpostId $journalpostId" }
             return
         }
