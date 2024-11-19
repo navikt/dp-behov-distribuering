@@ -33,6 +33,11 @@ internal class DistribueringBehovLøser(
         context: MessageContext,
     ) {
         val journalpostId = packet["journalpostId"].asText()
+
+        if (journalpostId == "671706117") {
+            logger.warn { "Skipper journalpostId $journalpostId" }
+            return
+        }
         kotlin.runCatching {
             withLogging(journalpostId, packet) {
                 runBlocking {
