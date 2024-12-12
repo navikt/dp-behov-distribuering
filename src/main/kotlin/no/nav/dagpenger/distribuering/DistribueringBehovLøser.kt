@@ -11,8 +11,6 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
-private val journalpostIdSkip = "685934297"
-private val bestillingsIdSkip = "8e44a102-a412-4361-bd55-d517f297c3f5"
 
 internal class DistribueringBehovLøser(
     rapidsConnection: RapidsConnection,
@@ -44,30 +42,20 @@ internal class DistribueringBehovLøser(
         kotlin.runCatching {
             withLogging(journalpostId, packet) {
                 runBlocking {
-                    if (journalpostId == journalpostIdSkip) {
-                        packet["@løsning"] =
-                            mapOf(
-                                BEHOV_NAVN to
-                                    mapOf(
-                                        "distribueringId" to bestillingsIdSkip,
-                                    ),
-                            )
-                    } else {
-                        val response =
-                            distribusjonKlient.distribuerJournalpost(
-                                DistribusjonKlient.Request(
-                                    journalpostId = journalpostId,
+                    val response =
+                        distribusjonKlient.distribuerJournalpost(
+                            DistribusjonKlient.Request(
+                                journalpostId = journalpostId,
+                            ),
+                        )
+                    packet["@løsning"] =
+                        mapOf(
+                            BEHOV_NAVN to
+                                mapOf(
+                                    "distribueringId" to response.bestillingsId,
                                 ),
-                            )
+                        )
 
-                        packet["@løsning"] =
-                            mapOf(
-                                BEHOV_NAVN to
-                                    mapOf(
-                                        "distribueringId" to response.bestillingsId,
-                                    ),
-                            )
-                    }
                     val message = packet.toJson()
                     context.publish(message)
                     message
