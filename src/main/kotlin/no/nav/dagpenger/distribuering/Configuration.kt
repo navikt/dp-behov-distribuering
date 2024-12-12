@@ -31,7 +31,7 @@ internal object Configuration {
     val distribuerjournalpostApiScope = properties[Key("DOKDISTFORDELING_API_SCOPE", stringType)]
 
     val tokenProvider = {
-        azureAdClient.clientCredentials(distribuerjournalpostApiScope).accessToken
+        azureAdClient.clientCredentials(distribuerjournalpostApiScope).access_token
             ?: throw RuntimeException("Klarte ikke hente token")
     }
 
