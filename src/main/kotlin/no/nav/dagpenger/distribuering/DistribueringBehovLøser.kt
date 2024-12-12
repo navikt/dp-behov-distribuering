@@ -11,9 +11,8 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
-private val journalpostIdSkip = "671724979"
-private val bestillingsIdSkip = "708644c3-514a-4579-8a5c-a1a3202a4d50"
-// "685934297"
+private val journalpostIdSkip = "685934297"
+private val bestillingsIdSkip = "8e44a102-a412-4361-bd55-d517f297c3f5"
 
 internal class DistribueringBehovLøser(
     rapidsConnection: RapidsConnection,
