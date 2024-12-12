@@ -11,6 +11,9 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger { }
 private val sikkerlogg = KotlinLogging.logger("tjenestekall")
+private val journalpostIdSkip = "671724979"
+private val bestillingsIdSkip = "708644c3-514a-4579-8a5c-a1a3202a4d50"
+// "685934297"
 
 internal class DistribueringBehovLøser(
     rapidsConnection: RapidsConnection,
@@ -42,21 +45,30 @@ internal class DistribueringBehovLøser(
         kotlin.runCatching {
             withLogging(journalpostId, packet) {
                 runBlocking {
-                    val response =
-                        distribusjonKlient.distribuerJournalpost(
-                            DistribusjonKlient.Request(
-                                journalpostId = journalpostId,
-                            ),
-                        )
-
-                    packet["@løsning"] =
-                        mapOf(
-                            BEHOV_NAVN to
-                                mapOf(
-                                    "distribueringId" to response.bestillingsId,
+                    if (journalpostId == journalpostIdSkip) {
+                        packet["@løsning"] =
+                            mapOf(
+                                BEHOV_NAVN to
+                                    mapOf(
+                                        "distribueringId" to bestillingsIdSkip,
+                                    ),
+                            )
+                    } else {
+                        val response =
+                            distribusjonKlient.distribuerJournalpost(
+                                DistribusjonKlient.Request(
+                                    journalpostId = journalpostId,
                                 ),
-                        )
+                            )
 
+                        packet["@løsning"] =
+                            mapOf(
+                                BEHOV_NAVN to
+                                    mapOf(
+                                        "distribueringId" to response.bestillingsId,
+                                    ),
+                            )
+                    }
                     val message = packet.toJson()
                     context.publish(message)
                     message
