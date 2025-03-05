@@ -15,8 +15,6 @@ repositories {
 }
 
 dependencies {
-    implementation(platform(kotlin("bom")))
-    implementation(kotlin("stdlib-jdk8"))
     testImplementation(kotlin("test"))
 }
 
@@ -36,4 +34,8 @@ tasks.test {
 
 tasks.withType<KotlinCompile>().configureEach {
     dependsOn("ktlintFormat")
+}
+
+tasks.named("check") {
+    dependsOn("ktlintCheck")
 }
