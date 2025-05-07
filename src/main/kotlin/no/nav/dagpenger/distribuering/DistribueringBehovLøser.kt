@@ -39,6 +39,12 @@ internal class DistribueringBehovLøser(
         meterRegistry: MeterRegistry,
     ) {
         val journalpostId = packet["journalpostId"].asText()
+
+        if (journalpostId in setOf("706083197")) {
+            logger.info { "Skipper $journalpostId" }
+            return
+        }
+
         kotlin.runCatching {
             withLogging(journalpostId, packet) {
                 runBlocking {
