@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamdagpenger
 spec:
-  image: {{ image }}
+  image: "{{ image }}"
   port: 8080
   prometheus:
     enabled: true
@@ -24,9 +24,9 @@ spec:
     enabled: true
   env:
     - name: DOKDISTFORDELING_URL
-      value: {{ dokdistfordeling.url }}
+      value: "{{ dokdistfordeling.url }}"
     - name: DOKDISTFORDELING_API_SCOPE
-      value: {{ dokdistfordeling.apiScope }}
+      value: "{{ dokdistfordeling.apiScope }}"
     - name: JDK_JAVA_OPTIONS
       value: -XX:+UseParallelGC -XX:MaxRAMPercentage=50.0 -XX:ActiveProcessorCount=4
   observability:
@@ -41,4 +41,4 @@ spec:
   accessPolicy:
     outbound:
       external:
-        - host: {{ dokdistfordeling.host }}
+        - host: "{{ dokdistfordeling.host }}"
