@@ -1,5 +1,5 @@
 kafka_pool: nav-dev
 dokdistfordeling:
   url: "https://dokdistfordeling-q1.dev-fss-pub.nais.io/rest/v1/distribuerjournalpost"
-  apiScope: "api://dev-fss.teamdokumenthandtering.saf-q1/.default"
+  apiScope: "api://dev-fss.teamdokumenthandtering.dokdistfordeling-q1/.default"
   host: "dokdistfordeling-q1.dev-fss-pub.nais.io"
