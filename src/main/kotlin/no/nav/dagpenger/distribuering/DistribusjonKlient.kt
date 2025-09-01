@@ -1,6 +1,7 @@
 package no.nav.dagpenger.distribuering
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
@@ -16,7 +17,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.jackson.jackson
-import mu.KotlinLogging
 
 private val log = KotlinLogging.logger { }
 
