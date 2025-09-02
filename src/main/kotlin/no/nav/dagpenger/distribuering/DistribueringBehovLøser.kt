@@ -40,7 +40,11 @@ internal class DistribueringBehovLøser(
         meterRegistry: MeterRegistry,
     ) {
         val journalpostId = packet["journalpostId"].asText()
-        val fagsystem = packet["fagsystem"].asText() ?: "Arena"
+        val fagsystem =
+            when (packet["fagsystem"].isMissingNode) {
+                true -> "Arena"
+                false -> packet["fagsystem"].asText()
+            }
         val bestillendeFagsystem =
             when (fagsystem) {
                 "Dagpenger" -> Fagsystem.DAGPENGER.kode
