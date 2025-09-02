@@ -17,6 +17,7 @@ internal class DistribueringBehovLøserTest {
     @Test
     fun `Løser behov`() {
         val journalpostId = "12345"
+        val fagsystem = Fagsystem.DAGPENGER
         val bestillingId = "xxx"
 
         val distribusjonKlient =
@@ -25,6 +26,7 @@ internal class DistribueringBehovLøserTest {
                     it.distribuerJournalpost(
                         DistribusjonKlient.Request(
                             journalpostId = journalpostId,
+                            bestillendeFagsystem = fagsystem.kode,
                         ),
                     )
                 } returns
@@ -49,6 +51,7 @@ internal class DistribueringBehovLøserTest {
             {
               "@event_name": "behov",
               "journalpostId": "$journalpostId",
+              "fagsystem": "Dagpenger",
               "@behov": [
                 "DistribueringBehov"
               ],
@@ -99,6 +102,7 @@ internal class DistribueringBehovLøserTest {
                 "DistribueringBehov"
               ],
               "journalpostId": "$journalpostId",
+              "fagsystem": "Dagpenger",
               "@id": "cd88ba99-3920-4d25-ae68-46d9805eeaa8"
             }
             """.trimIndent()

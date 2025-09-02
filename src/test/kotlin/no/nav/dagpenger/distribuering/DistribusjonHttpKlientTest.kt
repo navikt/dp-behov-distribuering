@@ -40,6 +40,7 @@ class DistribusjonHttpKlientTest {
                 distribusjonKlient.distribuerJournalpost(
                     DistribusjonKlient.Request(
                         journalpostId = "test-journalpost",
+                        bestillendeFagsystem = Fagsystem.ARENA.kode,
                     ),
                 )
 
@@ -67,6 +68,7 @@ class DistribusjonHttpKlientTest {
                 ).distribuerJournalpost(
                     DistribusjonKlient.Request(
                         journalpostId = "test-journalpost",
+                        bestillendeFagsystem = Fagsystem.ARENA.kode,
                     ),
                 )
             }

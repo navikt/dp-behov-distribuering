@@ -29,6 +29,7 @@ internal class DistribueringBehovLøser(
                 it.forbid("@løsning")
             }
             validate { it.requireKey("journalpostId") }
+            validate { it.interestedIn("fagsystem") }
         }.register(this)
     }
 
@@ -39,6 +40,13 @@ internal class DistribueringBehovLøser(
         meterRegistry: MeterRegistry,
     ) {
         val journalpostId = packet["journalpostId"].asText()
+        val fagsystem = packet["fagsystem"].asText() ?: "Arena"
+        val bestillendeFagsystem =
+            when (fagsystem) {
+                "Dagpenger" -> Fagsystem.DAGPENGER.kode
+                "Arena" -> Fagsystem.ARENA.kode
+                else -> throw IllegalStateException("Ugyldig fagsystem: $fagsystem")
+            }
 
         if (journalpostId in emptySet<String>()) {
             logger.info { "Skipper journalpostId $journalpostId fra distribuering behovløser" }
@@ -52,6 +60,7 @@ internal class DistribueringBehovLøser(
                         distribusjonKlient.distribuerJournalpost(
                             DistribusjonKlient.Request(
                                 journalpostId = journalpostId,
+                                bestillendeFagsystem = bestillendeFagsystem,
                             ),
                         )
                     packet["@løsning"] =

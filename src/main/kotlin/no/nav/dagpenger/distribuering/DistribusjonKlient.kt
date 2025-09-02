@@ -21,6 +21,12 @@ import io.ktor.serialization.jackson.jackson
 private val log = KotlinLogging.logger { }
 
 private const val ARENA_FAGSYSTEM_KODE = "AO01"
+private const val DAGPENGER_FAGSYSTEM_KODE = "DAGPENGER"
+
+enum class Fagsystem(val kode: String) {
+    ARENA(ARENA_FAGSYSTEM_KODE),
+    DAGPENGER(DAGPENGER_FAGSYSTEM_KODE),
+}
 
 interface DistribusjonKlient {
     suspend fun distribuerJournalpost(request: Request): Response
@@ -28,8 +34,8 @@ interface DistribusjonKlient {
     data class Request(
         val journalpostId: String,
         val distribusjonstype: String = "VEDTAK",
-        val bestillendeFagsystem: String = ARENA_FAGSYSTEM_KODE,
-        val dokumentProdApp: String = "dagpenger ny",
+        val bestillendeFagsystem: String,
+        val dokumentProdApp: String = "dp-melding-om-vedtak",
         val distribusjonstidspunkt: String = "KJERNETID",
     )
 
