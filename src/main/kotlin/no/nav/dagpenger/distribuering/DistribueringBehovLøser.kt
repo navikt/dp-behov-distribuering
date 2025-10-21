@@ -6,6 +6,8 @@ import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageContext
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageMetadata
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.github.oshai.kotlinlogging.withLoggingContext
+import io.ktor.client.plugins.ClientRequestException
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.runBlocking
 
@@ -40,6 +42,7 @@ internal class DistribueringBehovLøser(
         meterRegistry: MeterRegistry,
     ) {
         val journalpostId = packet["journalpostId"].asText()
+
         val fagsystem =
             when (packet["fagsystem"].isMissingNode) {
                 true -> "Arena"
@@ -52,37 +55,43 @@ internal class DistribueringBehovLøser(
                 else -> throw IllegalStateException("Ugyldig fagsystem: $fagsystem")
             }
 
-        if (journalpostId in emptySet<String>()) {
-            logger.info { "Skipper journalpostId $journalpostId fra distribuering behovløser" }
-            return
-        }
+        withLoggingContext("journalpostId" to journalpostId) {
+            if (journalpostId in emptySet<String>()) {
+                logger.info { "Skipper journalpostId $journalpostId fra distribuering behovløser" }
+                return
+            }
 
-        kotlin.runCatching {
-            withLogging(journalpostId, packet) {
-                runBlocking {
-                    val response =
-                        distribusjonKlient.distribuerJournalpost(
-                            DistribusjonKlient.Request(
-                                journalpostId = journalpostId,
-                                bestillendeFagsystem = bestillendeFagsystem,
-                            ),
-                        )
-                    packet["@løsning"] =
-                        mapOf(
-                            BEHOV_NAVN to
-                                mapOf(
-                                    "distribueringId" to response.bestillingsId,
+            kotlin.runCatching {
+                withLogging(journalpostId, packet) {
+                    runBlocking {
+                        val response =
+                            distribusjonKlient.distribuerJournalpost(
+                                DistribusjonKlient.Request(
+                                    journalpostId = journalpostId,
+                                    bestillendeFagsystem = bestillendeFagsystem,
                                 ),
-                        )
+                            )
+                        packet["@løsning"] =
+                            mapOf(
+                                BEHOV_NAVN to
+                                    mapOf(
+                                        "distribueringId" to response.bestillingsId,
+                                    ),
+                            )
 
-                    val message = packet.toJson()
-                    context.publish(message)
-                    message
+                        val message = packet.toJson()
+                        context.publish(message)
+                        message
+                    }
+                }
+            }.onFailure {
+                if (it is ClientRequestException && it.response.status.value == 409) {
+                    logger.info { "Journalpost allerede distribuert for journalpost: $journalpostId" }
+                } else {
+                    logger.error(it) { "Feil på kall mot joark" }
+                    throw it
                 }
             }
-        }.onFailure {
-            logger.error(it) { "Feil på kall mot joark" }
-            throw it
         }
     }
 

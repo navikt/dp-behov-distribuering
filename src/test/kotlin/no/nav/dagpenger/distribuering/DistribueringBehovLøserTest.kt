@@ -2,11 +2,14 @@ package no.nav.dagpenger.distribuering
 
 import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.kotest.assertions.json.shouldEqualSpecifiedJsonIgnoringOrder
+import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondBadRequest
+import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -84,6 +87,33 @@ internal class DistribueringBehovLøserTest {
         )
 
         shouldThrow<ClientRequestException> {
+            testRapid.sendTestMessage(
+                testMelding(
+                    journalpostId = journalpostId,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `skal ikke kaste feil dersom journalpost allerede er distribuert`() {
+        val journalpostId = "12345"
+
+        val distribusjonKlient =
+            DistribusjonHttpKlient(
+                url = "http://localhost:8080",
+                tokenProvider = { "" },
+                engine =
+                    MockEngine {
+                        respondError(HttpStatusCode.Conflict)
+                    },
+            )
+
+        DistribueringBehovLøser(
+            rapidsConnection = testRapid,
+            distribusjonKlient = distribusjonKlient,
+        )
+        shouldNotThrowAny {
             testRapid.sendTestMessage(
                 testMelding(
                     journalpostId = journalpostId,
