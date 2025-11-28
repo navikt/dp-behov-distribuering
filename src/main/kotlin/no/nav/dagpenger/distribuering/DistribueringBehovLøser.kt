@@ -17,22 +17,22 @@ private val sikkerlogg = KotlinLogging.logger("tjenestekall")
 internal class DistribueringBehovLøser(
     rapidsConnection: RapidsConnection,
     private val distribusjonKlient: DistribusjonKlient,
-) :
-    River.PacketListener {
+) : River.PacketListener {
     companion object {
         const val BEHOV_NAVN = "DistribueringBehov"
     }
 
     init {
-        River(rapidsConnection).apply {
-            precondition {
-                it.requireValue("@event_name", "behov")
-                it.requireAll("@behov", listOf(BEHOV_NAVN))
-                it.forbid("@løsning")
-            }
-            validate { it.requireKey("journalpostId") }
-            validate { it.interestedIn("fagsystem") }
-        }.register(this)
+        River(rapidsConnection)
+            .apply {
+                precondition {
+                    it.requireValue("@event_name", "behov")
+                    it.requireAll("@behov", listOf(BEHOV_NAVN))
+                    it.forbid("@løsning")
+                }
+                validate { it.requireKey("journalpostId") }
+                validate { it.interestedIn("fagsystem") }
+            }.register(this)
     }
 
     override fun onPacket(
@@ -61,37 +61,38 @@ internal class DistribueringBehovLøser(
                 return
             }
 
-            kotlin.runCatching {
-                withLogging(journalpostId, packet) {
-                    runBlocking {
-                        val response =
-                            distribusjonKlient.distribuerJournalpost(
-                                DistribusjonKlient.Request(
-                                    journalpostId = journalpostId,
-                                    bestillendeFagsystem = bestillendeFagsystem,
-                                ),
-                            )
-                        packet["@løsning"] =
-                            mapOf(
-                                BEHOV_NAVN to
-                                    mapOf(
-                                        "distribueringId" to response.bestillingsId,
+            kotlin
+                .runCatching {
+                    withLogging(journalpostId, packet) {
+                        runBlocking {
+                            val response =
+                                distribusjonKlient.distribuerJournalpost(
+                                    DistribusjonKlient.Request(
+                                        journalpostId = journalpostId,
+                                        bestillendeFagsystem = bestillendeFagsystem,
                                     ),
-                            )
+                                )
+                            packet["@løsning"] =
+                                mapOf(
+                                    BEHOV_NAVN to
+                                        mapOf(
+                                            "distribueringId" to response.bestillingsId,
+                                        ),
+                                )
 
-                        val message = packet.toJson()
-                        context.publish(message)
-                        message
+                            val message = packet.toJson()
+                            context.publish(message)
+                            message
+                        }
+                    }
+                }.onFailure {
+                    if (it is ClientRequestException && it.response.status.value == 409) {
+                        logger.info { "Journalpost allerede distribuert for journalpost: $journalpostId" }
+                    } else {
+                        logger.error(it) { "Feil på kall mot joark" }
+                        throw it
                     }
                 }
-            }.onFailure {
-                if (it is ClientRequestException && it.response.status.value == 409) {
-                    logger.info { "Journalpost allerede distribuert for journalpost: $journalpostId" }
-                } else {
-                    logger.error(it) { "Feil på kall mot joark" }
-                    throw it
-                }
-            }
         }
     }
 

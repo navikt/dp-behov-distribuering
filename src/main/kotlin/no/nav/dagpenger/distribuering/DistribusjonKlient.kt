@@ -23,7 +23,9 @@ private val log = KotlinLogging.logger { }
 private const val ARENA_FAGSYSTEM_KODE = "AO01"
 private const val DAGPENGER_FAGSYSTEM_KODE = "DAGPENGER"
 
-enum class Fagsystem(val kode: String) {
+enum class Fagsystem(
+    val kode: String,
+) {
     ARENA(ARENA_FAGSYSTEM_KODE),
     DAGPENGER(DAGPENGER_FAGSYSTEM_KODE),
 }
@@ -72,10 +74,10 @@ class DistribusjonHttpKlient(
             }
         }
 
-    override suspend fun distribuerJournalpost(request: DistribusjonKlient.Request): DistribusjonKlient.Response {
-        return httpClient.post {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }.body<DistribusjonKlient.Response>()
-    }
+    override suspend fun distribuerJournalpost(request: DistribusjonKlient.Request): DistribusjonKlient.Response =
+        httpClient
+            .post {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+            }.body<DistribusjonKlient.Response>()
 }
