@@ -20,8 +20,6 @@ spec:
     requests:
       cpu: 50m
       memory: 256Mi
-  secureLogs:
-    enabled: true
   env:
     - name: DOKDISTFORDELING_URL
       value: "{{ dokdistfordeling.url }}"
