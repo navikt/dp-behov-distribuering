@@ -56,7 +56,7 @@ internal class DistribueringBehovLøser(
             }
 
         withLoggingContext("journalpostId" to journalpostId) {
-            if (journalpostId in setOf<String>("454096209")) {
+            if (journalpostId in setOf<String>("454096209","454096180")) {
                 logger.info { "Skipper journalpostId $journalpostId fra distribuering behovløser" }
                 return
             }
