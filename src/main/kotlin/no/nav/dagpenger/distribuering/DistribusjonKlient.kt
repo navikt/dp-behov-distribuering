@@ -16,7 +16,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.serialization.jackson.jackson
+import io.ktor.serialization.jackson3.jackson
 
 private val log = KotlinLogging.logger { }
 
@@ -60,7 +60,12 @@ class DistribusjonHttpKlient(
             }
             install(ContentNegotiation) {
                 jackson {
-                    setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                    changeDefaultPropertyInclusion {
+                        JsonInclude.Value.construct(
+                            JsonInclude.Include.NON_NULL,
+                            JsonInclude.Include.USE_DEFAULTS,
+                        )
+                    }
                 }
             }
             install(Logging) {
