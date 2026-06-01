@@ -18,9 +18,10 @@ internal class DistribueringBehovLøserTest {
     private val testRapid = TestRapid()
 
     @Test
-    fun `Løser behov`() {
+    fun `Løser behov med distribusjonstype VIKTIG`() {
         val journalpostId = "12345"
         val fagsystem = Fagsystem.DAGPENGER
+        val distribusjonstype = Distribusjonstype.VIKTIG
         val bestillingId = "xxx"
 
         val distribusjonKlient =
@@ -30,6 +31,7 @@ internal class DistribueringBehovLøserTest {
                         DistribusjonKlient.Request(
                             journalpostId = journalpostId,
                             bestillendeFagsystem = fagsystem.kode,
+                            distribusjonstype = distribusjonstype.name,
                         ),
                     )
                 } returns
@@ -45,6 +47,59 @@ internal class DistribueringBehovLøserTest {
         testRapid.sendTestMessage(
             testMelding(
                 journalpostId = journalpostId,
+                distribusjonstype = distribusjonstype.name,
+            ),
+        )
+        testRapid.inspektør.size shouldBe 1
+        //language=JSON
+        testRapid.inspektør.message(0).toString() shouldEqualSpecifiedJsonIgnoringOrder """
+            {
+              "@event_name": "behov",
+              "journalpostId": "$journalpostId",
+              "fagsystem": "Dagpenger",
+              "distribusjonstype": "VIKTIG",
+              "@behov": [
+                "DistribueringBehov"
+              ],
+              "@løsning": {
+                "DistribueringBehov": {
+                  "distribueringId": "$bestillingId"
+                }
+              }
+            }
+            """
+    }
+
+    @Test
+    fun `Løser behov når melding mangler distribusjonstype`() {
+        val journalpostId = "12345"
+        val fagsystem = Fagsystem.DAGPENGER
+        val bestillingId = "xxx"
+
+        val distribusjonKlient =
+            mockk<DistribusjonKlient>().also {
+                coEvery {
+                    it.distribuerJournalpost(
+                        DistribusjonKlient.Request(
+                            journalpostId = journalpostId,
+                            bestillendeFagsystem = fagsystem.kode,
+                            distribusjonstype = Distribusjonstype.VEDTAK.name,
+                        ),
+                    )
+                } returns
+                    DistribusjonKlient.Response(
+                        bestillingsId = bestillingId,
+                    )
+            }
+        DistribueringBehovLøser(
+            rapidsConnection = testRapid,
+            distribusjonKlient = distribusjonKlient,
+        )
+
+        testRapid.sendTestMessage(
+            testMelding(
+                journalpostId = journalpostId,
+                distribusjonstype = null,
             ),
         )
 
@@ -68,8 +123,46 @@ internal class DistribueringBehovLøserTest {
     }
 
     @Test
-    fun `skal kaste feil dersom distribusjonsklient feiler`() {
+    fun `Kaster feil dersom distribusjonstype er ugyldig`() {
         val journalpostId = "12345"
+        val fagsystem = Fagsystem.DAGPENGER
+        val distribusjonstype = "FEILTYPE"
+        val bestillingId = "xxx"
+
+        val distribusjonKlient =
+            mockk<DistribusjonKlient>().also {
+                coEvery {
+                    it.distribuerJournalpost(
+                        DistribusjonKlient.Request(
+                            journalpostId = journalpostId,
+                            bestillendeFagsystem = fagsystem.kode,
+                            distribusjonstype = distribusjonstype,
+                        ),
+                    )
+                } returns
+                    DistribusjonKlient.Response(
+                        bestillingsId = bestillingId,
+                    )
+            }
+        DistribueringBehovLøser(
+            rapidsConnection = testRapid,
+            distribusjonKlient = distribusjonKlient,
+        )
+
+        shouldThrow<IllegalStateException> {
+            testRapid.sendTestMessage(
+                testMelding(
+                    journalpostId = journalpostId,
+                    distribusjonstype = distribusjonstype,
+                ),
+            )
+        }
+    }
+
+    @Test
+    fun `Skal kaste feil dersom distribusjonsklient feiler`() {
+        val journalpostId = "12345"
+        val distribusjonstype = Distribusjonstype.VEDTAK
 
         val distribusjonKlient =
             DistribusjonHttpKlient(
@@ -90,15 +183,16 @@ internal class DistribueringBehovLøserTest {
             testRapid.sendTestMessage(
                 testMelding(
                     journalpostId = journalpostId,
+                    distribusjonstype = distribusjonstype.name,
                 ),
             )
         }
     }
 
     @Test
-    fun `skal ikke kaste feil dersom journalpost allerede er distribuert`() {
+    fun `Skal ikke kaste feil dersom journalpost allerede er distribuert`() {
         val journalpostId = "12345"
-
+        val distribusjonstype = Distribusjonstype.VEDTAK
         val distribusjonKlient =
             DistribusjonHttpKlient(
                 url = "http://localhost:8080",
@@ -117,24 +211,40 @@ internal class DistribueringBehovLøserTest {
             testRapid.sendTestMessage(
                 testMelding(
                     journalpostId = journalpostId,
+                    distribusjonstype = distribusjonstype.name,
                 ),
             )
         }
     }
 
-    private fun testMelding(journalpostId: String): String {
-        //language=JSON
-        return """
+    private fun testMelding(
+        journalpostId: String,
+        distribusjonstype: String?,
+    ): String {
+        val distribusjonstypeJson =
+            if (distribusjonstype != null) {
+                """ 
+                "distribusjonstype": "$distribusjonstype", 
+                """.trimIndent()
+            } else {
+                ""
+            }
+
+        val json =
+            //language=JSON
+            """
             {
               "@event_name": "behov",
               "@behovId": "1abdc524-d86f-429c-a330-62b87f6948af",
               "@behov": [
                 "DistribueringBehov"
               ],
-              "journalpostId": "$journalpostId",
+              "journalpostId": "$journalpostId", 
+              $distribusjonstypeJson
               "fagsystem": "Dagpenger",
               "@id": "cd88ba99-3920-4d25-ae68-46d9805eeaa8"
             }
             """.trimIndent()
+        return json
     }
 }

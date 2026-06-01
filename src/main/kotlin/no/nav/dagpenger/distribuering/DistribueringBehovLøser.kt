@@ -32,6 +32,7 @@ internal class DistribueringBehovLøser(
                 }
                 validate { it.requireKey("journalpostId") }
                 validate { it.interestedIn("fagsystem") }
+                validate { it.interestedIn("distribusjonstype") }
             }.register(this)
     }
 
@@ -43,16 +44,28 @@ internal class DistribueringBehovLøser(
     ) {
         val journalpostId = packet["journalpostId"].asText()
 
-        val fagsystem =
+        val fagsystemAsString =
             when (packet["fagsystem"].isMissingNode) {
                 true -> "Arena"
-                false -> packet["fagsystem"].asText()
+                false -> packet["fagsystem"].stringValue()
             }
         val bestillendeFagsystem =
-            when (fagsystem) {
-                "Dagpenger" -> Fagsystem.DAGPENGER.kode
-                "Arena" -> Fagsystem.ARENA.kode
-                else -> throw IllegalStateException("Ugyldig fagsystem: $fagsystem")
+            when (fagsystemAsString) {
+                "Dagpenger" -> Fagsystem.DAGPENGER
+                "Arena" -> Fagsystem.ARENA
+                else -> throw IllegalStateException("Ugyldig fagsystem: $fagsystemAsString")
+            }
+        val distribusjonstypeAsString =
+            when (packet["distribusjonstype"].isMissingNode || packet["distribusjonstype"].isNull) {
+                true -> "VEDTAK"
+                false -> packet["distribusjonstype"].stringValue()
+            }
+        val distribusjonstype =
+            when (distribusjonstypeAsString) {
+                Distribusjonstype.VEDTAK.name -> Distribusjonstype.VEDTAK
+                Distribusjonstype.VIKTIG.name -> Distribusjonstype.VIKTIG
+                Distribusjonstype.ANNET.name -> Distribusjonstype.ANNET
+                else -> throw IllegalStateException("Ugyldig distribusjonstype: $distribusjonstypeAsString")
             }
 
         withLoggingContext("journalpostId" to journalpostId) {
@@ -69,7 +82,8 @@ internal class DistribueringBehovLøser(
                                 distribusjonKlient.distribuerJournalpost(
                                     DistribusjonKlient.Request(
                                         journalpostId = journalpostId,
-                                        bestillendeFagsystem = bestillendeFagsystem,
+                                        bestillendeFagsystem = bestillendeFagsystem.kode,
+                                        distribusjonstype = distribusjonstype.name,
                                     ),
                                 )
                             packet["@løsning"] =

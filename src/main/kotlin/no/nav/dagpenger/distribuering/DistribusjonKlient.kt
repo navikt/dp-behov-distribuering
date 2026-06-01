@@ -30,12 +30,18 @@ enum class Fagsystem(
     DAGPENGER(DAGPENGER_FAGSYSTEM_KODE),
 }
 
+enum class Distribusjonstype {
+    VEDTAK,
+    VIKTIG,
+    ANNET,
+}
+
 interface DistribusjonKlient {
     suspend fun distribuerJournalpost(request: Request): Response
 
     data class Request(
         val journalpostId: String,
-        val distribusjonstype: String = "VEDTAK",
+        val distribusjonstype: String,
         val bestillendeFagsystem: String,
         val dokumentProdApp: String = "dp-melding-om-vedtak",
         val distribusjonstidspunkt: String = "KJERNETID",
