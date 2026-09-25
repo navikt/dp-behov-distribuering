@@ -10,7 +10,7 @@ dependencies {
     implementation(libs.kotlin.logging)
     implementation(libs.bundles.ktor.client)
     implementation("io.ktor:ktor-serialization-jackson3:${libs.versions.ktor.get()}")
-    implementation("no.nav.dagpenger:oauth2-klient:2026.09.21-06.22.ddf281baf78f")
+    implementation("no.nav.dagpenger:oauth2-klient:2026.09.25-06.21.cba57db93eac")
 
     testImplementation(libs.ktor.client.mock)
     testImplementation(libs.mockk)
