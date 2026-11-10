@@ -42,8 +42,7 @@ internal class DistribueringBehovLøser(
         metadata: MessageMetadata,
         meterRegistry: MeterRegistry,
     ) {
-        val journalpostId = packet["journalpostId"].asText()
-
+        val journalpostId = packet["journalpostId"].stringValue()
         val fagsystemAsString =
             when (packet["fagsystem"].isMissingNode) {
                 true -> "Arena"
